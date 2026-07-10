@@ -9,7 +9,6 @@ Exemplo de Historico de Senhas em EJS e Node.js com banco de dados MongoDB.
 | **Express** | Framework web padrão e mais popular do Node.js |
 | **Zod** |  Biblioteca de validação e declaração de esquemas para JavaScript e TypeScript |
 
-
 #### 🔄 Executar a aplicação Docker
 VSCode Terminal [1] Criar Container
 ```bash
@@ -20,6 +19,15 @@ VSCode Terminal [3] Remover Container
 ```bash
 docker compose down -v
 ```
+
+#### 🔄 Executar a aplicação Desenvolvimento Local
+
+VSCode Terminal [2] 
+```bash
+npm install
+npm rum dev
+```
+
 Para acessar a aplicação **http://localhost:3333/index**
 
 #### 🧪 Executar Endpoints 
