@@ -8,6 +8,7 @@ Exemplo de Historico de Senhas em EJS e Node.js com banco de dados MongoDB.
 
 | Tecnologia | Descrição |
 |-----------|-----------|
+| **EJS** |	Mecanismo de templates (view engine) para Node.js. |
 | **Bcrypt** |   Algoritmo de hashing criptográfico utilizado para armazenar senhas de forma segura |
 | **Express** | Framework web padrão e mais popular do Node.js |
 | **Zod** |  Biblioteca de validação e declaração de esquemas para JavaScript e TypeScript |
