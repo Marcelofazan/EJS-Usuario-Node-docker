@@ -34,10 +34,10 @@ Para acessar a aplicação **http://localhost:3333/index**
 
 |Método     | Caminho   | Descrição |
 |-----------|-----------|-----------|
-| **GET** | **/users** | Retorna todos os documentos de usuários na íntegra (apenas para demonstração) |
-| **POST** | **/users** |Registra um novo usuário |
-| **POST** | **/users/login** | Autentica um usuário |
-| **PUT**  | **/users/:username/password** | Altera a senha de um usuário |
+| **GET** | /users | Retorna todos os documentos de usuários na íntegra (apenas para demonstração) |
+| **POST** | /users |Registra um novo usuário |
+| **POST** | /users/login | Autentica um usuário |
+| **PUT**  | /users/username/password | Altera a senha de um usuário |
 
 
 - Consultar Usuarios 
