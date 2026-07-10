@@ -20,6 +20,7 @@ VSCode Terminal [3] Remover Container
 ```bash
 docker compose down -v
 ```
+Para acessar a aplicação **http://localhost:3333/index**
 
 #### 🧪 Executar Endpoints 
 
