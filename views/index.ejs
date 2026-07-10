@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Acessos</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --background: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; color: var(--text); }
+
+        /* Sistema de Navegação (Links/Abas) */
+        nav {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0;
+            background: #e5e7eb;
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        nav button {
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        nav button.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Container das Telas */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .view-panel {
+            display: none;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .view-panel.active { display: block; }
+
+        h2 { margin-top: 0; margin-bottom: 20px; font-size: 1.25rem; }
+
+        /* Formulários e Inputs */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.9rem; }
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: 2px solid #c7d2fe;
+            border-color: var(--primary);
+        }
+
+        button[type="submit"] {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+        button[type="submit"]:hover { background: var(--primary-hover); }
+
+        .rules {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        /* Tabela de Usuários */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+        th { background: #f9fafb; font-weight: 600; color: var(--text-muted); }
+        
+        /* Sistema de Alertas/Toast Inline */
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .alert.success { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; display: block; }
+        .alert.error { background: #fef2f2; color: var(--error); border: 1px solid #fca5a5; display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Painel de Controle Identity</h1>
+    </header>
+
+    <!-- LINKS DE NAVEGAÇÃO -->
+    <nav>
+        <button onclick="switchView('register')" id="nav-register" class="active">Registrar Novo Usuário</button>
+        <button onclick="switchView('login')" id="nav-login">Login de Usuário</button>
+        <button onclick="switchView('change-password')" id="nav-change-password">Alterar Senha</button>
+        <button onclick="switchView('get-users')" id="nav-get-users">Ver Todos os Usuários</button>
+    </nav>
+
+    <div class="container">
+        <!-- ÁREA Global de Mensagens de Feedback -->
+        <div id="global-alert" class="alert"></div>
+
+        <!-- TELA 1: REGISTER NEW USER -->
+        <div id="view-register" class="view-panel active">
+            <h2>Registrar Novo Usuário</h2>
+            <form id="form-register">
+                <div class="form-group">
+                    <label>Nome de Usuário (Username)</label>
+                    <input type="text" name="username" placeholder="Escolha um usuário" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" name="password" placeholder="Crie uma senha forte" required autocomplete="new-password">
+                    <div class="rules">
+                        ⚠️ A senha deve conter: Mínimo 8 caracteres, uma letra maiúscula, uma minúscula, um número e um caractere especial.
+                    </div>
+                </div>
+                <button type="submit">Criar Usuário</button>
+            </form>
+        </div>
+
+        <!-- TELA 2: LOGIN USER -->
+        <div id="view-login" class="view-panel">
+            <h2>Login de Usuário</h2>
+            <form id="form-login">
+                <div class="form-group">
+                    <label>Nome de Usuário</label>
+                    <input type="text" name="username" placeholder="Digite seu usuário" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" name="password" placeholder="Digite sua senha" required autocomplete="current-password">
+                </div>
+                <button type="submit">Autenticar</button>
+            </form>
+        </div>
+
+        <!-- TELA 3: CHANGE PASSWORD -->
+        <div id="view-change-password" class="view-panel">
+            <h2>Alterar Senha</h2>
+            <form id="form-change-password">
+                <div class="form-group">
+                    <label>Nome de Usuário Alvo</label>
+                    <input type="text" id="change-target-username" name="username" placeholder="Confirme o usuário alvo" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha Atual</label>
+                    <input type="password" name="current_password" placeholder="Digite a senha atual" required>
+                </div>
+                <div class="form-group">
+                    <label>Nova Senha</label>
+                    <input type="password" name="new_password" placeholder="Digite a nova senha desejada" required>
+                    <div class="rules">
+                        🔒 Sujeito à verificação de regras de força e histórico de uso do banco de dados.
+                    </div>
+                </div>
+                <button type="submit">Atualizar Senha</button>
+            </form>
+        </div>
+
+        <!-- TELA 4: GET ALL USERS -->
+        <div id="view-get-users" class="view-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Todos os Usuários Cadastrados</h2>
+                <button onclick="fetchAllUsers()" style="width: auto; background: #9ca3af; padding: 6px 12px; font-size: 0.85rem;" type="button">Atualizar Dados</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome de Usuário</th>
+                            <th>Criado em</th>
+                            <th>Modificado em</th>
+                            <th>Histórico de Senhas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted);">Nenhum dado carregado.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+   <!-- SCRIPT DE INTEGRAÇÃO COM AS ROTAS EXPRESS -->
+<script>
+    const API_URL = '/users';
+    
+    // Captura o elemento de alerta global se ele existir na página
+    const alertEl = document.getElementById('global-alert');
+
+    // ==========================================
+    // UTILIÁRIOS DE RENDERIZAÇÃO E NAVEGAÇÃO
+    // ==========================================
+
+    // Gerenciador de Alternância de Telas (Usado se você optar pelo layout de Abas/SPA)
+    function switchView(viewName) {
+        hideAlert();
+        
+        // Oculta todos os painéis e remove os estados ativos dos botões de abas
+        document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+
+        // Ativa apenas a tela e o botão que o usuário clicou
+        const targetPanel = document.getElementById(`view-${viewName}`);
+        const targetBtn = document.getElementById(`nav-${viewName}`);
+        
+        if (targetPanel) targetPanel.classList.add('active');
+        if (targetBtn) targetBtn.classList.add('active');
+
+        // Se abriu a tela de usuários, força a atualização da tabela
+        if (viewName === 'get-users' || viewName === 'users-list') {
+            loadUsers();
+        }
+    }
+
+    // Exibe mensagens de erro ou sucesso no card da tela (se houver o elemento) ou fallback para alert
+    function showAlert(message, type = 'success') {
+        if (alertEl) {
+            alertEl.className = `alert ${type}`;
+            alertEl.innerText = message;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            alert((type === 'error' ? '❌ ' : '✨ ') + message);
+        }
+    }
+
+    // Oculta o card de mensagens da tela
+    function hideAlert() {
+        if (alertEl) {
+            alertEl.className = 'alert';
+            alertEl.innerText = '';
+        }
+    }
+
+    // Processa a resposta JSON e captura erros estruturados do Zod ou respostas do Express
+    async function handleResponse(response) {
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || (data.errors && data.errors.message) || 'Erro inesperado no servidor');
+        }
+        return data;
+    }
+
+    // ==========================================
+    // REQUISIÇÕES E INTEGRAÇÃO COM O BACKEND
+    // ==========================================
+
+    // Busca os usuários cadastrados e atualiza os dois mapeamentos possíveis de tabela (SPA ou EJS)
+    async function loadUsers() {
+        // Aceita tanto a ID curta do modelo EJS separado quanto a ID do modelo de abas
+        const tbody = document.getElementById('user-table-body') || document.getElementById('users-table-body');
+        if (!tbody) return;
+
+        try {
+            const response = await fetch(API_URL);
+            const users = await handleResponse(response);
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Nenhum usuário cadastrado no MongoDB.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td><strong>${user.username}</strong></td>
+                    <td>${new Date(user.created_at).toLocaleString('pt-BR')}</td>
+                    <td>${user.updated_at ? new Date(user.updated_at).toLocaleString('pt-BR') : 'Sem modificações'}</td>
+                    <td>🗄️ ${user.password_history ? user.password_history.length : 1} senha(s) salvas</td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            console.error('Erro ao carregar usuários:', err.message);
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--error);">Erro ao carregar dados do banco.</td></tr>`;
+        }
+    }
+
+    // Vincula também o nome antigo da função para evitar erros de chamada duplicada nas abas
+    const fetchAllUsers = loadUsers;
+
+    // ==========================================
+    // CONFIGURAÇÃO DOS OUVINTES (SUBMIT)
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // 1. Ouvinte do Formulário de Registro (POST /users)
+        // Suporta os dois IDs possíveis usados nos exemplos anteriores
+        const registerForm = document.getElementById('register-form') || document.getElementById('form-register');
+        if (registerForm) {
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideAlert();
+                const formData = new FormData(e.target);
+                
+                try {
+                    const res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Object.fromEntries(formData))
+                    });
+                    const data = await handleResponse(res);
+                    showAlert(`Usuário criado com sucesso: ${data.message}`, 'success');
+                    e.target.reset();
+                    loadUsers();
+                } catch (err) {
+                    showAlert(`Erro no cadastro: ${err.message}`, 'error');
+                }
+            });
+        }
+
+        // 2. Ouvinte do Formulário de Login (POST /users/login)
+        const loginForm = document.getElementById('login-form') || document.getElementById('form-login');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideAlert();
+                const formData = new FormData(e.target);
+                
+                try {
+                    const res = await fetch(`${API_URL}/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Object.fromEntries(formData))
+                    });
+                    const data = await handleResponse(res);
+                    showAlert(`Autenticado: ${data.message}`, 'success');
+                    e.target.reset();
+                } catch (err) {
+                    showAlert(`Falha no login: ${err.message}`, 'error');
+                }
+            });
+        }
+
+        // 3. Ouvinte do Formulário de Alteração de Senha (PUT /users/:username/password)
+        const changePasswordForm = document.getElementById('change-password-form') || document.getElementById('form-change-password');
+        if (changePasswordForm) {
+            changePasswordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideAlert();
+                
+                // Suporta os dois padrões de IDs mapeados nos inputs
+                const usernameEl = document.getElementById('change-username') || document.getElementById('change-target-username');
+                if (!usernameEl) {
+                    showAlert('Erro técnico: Campo do username alvo não encontrado.', 'error');
+                    return;
+                }
+                
+                const username = usernameEl.value;
+                const formData = new FormData(e.target);
+                
+                const payload = {
+                    current_password: formData.get('current_password'),
+                    new_password: formData.get('new_password')
+                };
+
+                try {
+                    const res = await fetch(`${API_URL}/${encodeURIComponent(username)}/password`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await handleResponse(res);
+                    showAlert(`Senha modificada: ${data.message}`, 'success');
+                    e.target.reset();
+                    loadUsers();
+                } catch (err) {
+                    showAlert(`Recusado pelo Servidor: ${err.message}`, 'error');
+                }
+            });
+        }
+
+        // Carregamento automático inicial da tabela caso ela esteja presente na página carregada
+        loadUsers();
+    });
+</script>
