@@ -56,7 +56,7 @@ json{
 ```
 
 #### Separação de responsabilidades 
-
+```bash
 ├── main.ts                  # Ponto de entrada do app Express, encerramento gracioso
 ├── tsconfig.json
 ├── package.json
@@ -65,7 +65,7 @@ json{
 │   └── validate.ts          # Fábrica de middleware de validação Zod
 ├── routes/
 │   └── passwords.ts         # Todas as rotas da API, esquemas Zod e auxiliares bcrypt
-
+```
 
  #### ⚙️ Zod Regras de Força de Senha 
 - Aplicadas ao campo password no registro e ao campo new_password na alteração de senha:
