@@ -19,14 +19,14 @@ VSCode Terminal [1] Criar Container
 docker-compose up --build
 ```
 
-VSCode Terminal [3] Remover Container
+VSCode Terminal [2] Remover Container
 ```bash
 docker compose down -v
 ```
 
 #### 🔄 Executar a aplicação Desenvolvimento Local
 
-VSCode Terminal [2] 
+VSCode Terminal [1] 
 ```bash
 npm install
 npm rum dev
