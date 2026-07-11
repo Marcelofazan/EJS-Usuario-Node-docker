@@ -14,12 +14,14 @@ Exemplo de Historico de Senhas em EJS e Node.js com banco de dados MongoDB.
 | **Zod** |  Biblioteca de validação e declaração de esquemas para JavaScript e TypeScript |
 
 #### 🔄 Executar a aplicação Docker
-VSCode Terminal [1] Criar Container
+VSCode Terminal [1] 
+- Criar Container
 ```bash
 docker-compose up --build
 ```
 
-VSCode Terminal [2] Remover Container
+VSCode Terminal [2] 
+- Remover Container
 ```bash
 docker compose down -v
 ```
